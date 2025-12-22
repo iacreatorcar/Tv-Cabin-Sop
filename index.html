@@ -1,1 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TV Cabin Guest SOP — Workflow & SLA Management</title>
+  
+  <!-- Collegamento al CSS esterno -->
+  <link rel="stylesheet" href="css/style.css">
+  
+  <!-- Libreria esterna per PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <!-- Se hai un logo fisso in assets/logo.png, puoi sostituire il div sotto con: 
+           <div class="logo-preview"><img src="assets/logo.png" style="width:100%"></div> -->
+      <div class="logo-preview" id="logoPreview">LOGO</div>
+      <div>
+        <h1>TV Cabin Guest SOP</h1>
+        <div class="sub">Corporate Workflow & SLA Management Dashboard</div>
+        <div class="sub" style="margin-top:6px">Copyright © Dalise Carmine — Digital Lead • carmine.dalise@aroyacruises.com</div>
+      </div>
+    </header>
 
+    <div class="grid">
+      <main class="card">
+        <h3>Timeline & SLA Management</h3>
+        <p class="small">Add tasks with department, deadlines, and SLA (in working days).</p>
+
+        <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+          <input id="taskTitle" placeholder="Task title" style="flex:1" />
+          <input id="taskDept" placeholder="Department" style="width:160px" />
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+          <input type="date" id="taskDue" />
+          <input type="number" id="taskSLA" placeholder="SLA days" style="width:120px" />
+          <button id="addTaskBtn">Add Task</button>
+        </div>
+
+        <div class="timeline" id="timeline"></div>
+
+        <div style="margin-top:16px;display:flex;gap:8px;align-items:center">
+          <button id="exportPdf">Download PDF</button>
+          <button class="secondary" id="printBtn">Print</button>
+          <button class="secondary" id="clearAll">Clear all</button>
+        </div>
+      </main>
+
+      <aside class="card">
+        <h4>Project Settings</h4>
+        <div style="margin-top:8px;display:flex;flex-direction:column;gap:10px">
+          <label class="small">Upload company logo</label>
+          <input type="file" id="logoInput" accept="image/*" />
+
+          <label class="small">Project title</label>
+          <input id="projectTitleEN" value="TV Cabin Guest SOP — Project" />
+
+          <label class="small">Hotel Director (cc)</label>
+          <input id="hotelDirector" placeholder="Name" />
+
+          <label class="small">Fleet Supervisor</label>
+          <input id="fleetSupervisor" placeholder="Name" />
+
+          <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+            <button id="saveSettings" class="secondary">Save settings</button>
+            <button id="loadDemo">Load demo</button>
+          </div>
+        </div>
+
+        <hr style="margin:16px 0" />
+        <div>
+          <h5>SLA Legend</h5>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <div class="pill" style="background:#ecfdf5;color:var(--ok);border:1px solid #d1fae5">On Track</div>
+            <div class="pill" style="background:#fff7ed;color:var(--warn);border:1px solid #ffedd5">Near SLA</div>
+            <div class="pill" style="background:#fff1f2;color:var(--bad);border:1px solid #fee2e2">Past SLA</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      <div class="copyright">© Dalise Carmine — Digital Lead</div>
+      <div class="small">iacreatorcar@gmail.com</div>
+    </footer>
+  </div>
+
+  <!-- Collegamento al JS esterno -->
+  <script src="js/script.js"></script>
+</body>
+</html>
