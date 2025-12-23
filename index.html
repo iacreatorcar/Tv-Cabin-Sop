@@ -3,11 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TV Cabin Guest SOP — Dashboard</title>
+  <title>TV Cabin Guest SOP — Workflow Dashboard</title>
   
-  <!-- Usiamo il percorso relativo esatto -->
-  <link rel="stylesheet" href="./css/style.css">
+  <!-- Collegamento CSS -->
+  <link rel="stylesheet" href="css/style.css">
   
+  <!-- Font e Librerie -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -16,51 +17,84 @@
 <body>
   <div class="container">
     <header>
-      <!-- MODIFICATO: Puntiamo direttamente al logo caricato in assets -->
       <div class="logo-preview" id="logoPreview">
-        <img src="assets/logo.png" alt="Logo" style="max-width:100 %; height:auto;" onerror="this.style.display='none'; this.parentNode.innerText='LOGO'">
+        <img src="assets/logo.png" alt="Logo" onerror="this.style.display='none'; this.parentNode.innerText='LOGO'">
       </div>
       <div>
         <h1>TV Cabin Guest SOP</h1>
-        <div class="sub">Corporate Workflow & SLA Management • Dalise Carmine</div>
+        <div class="sub">Workflow & SLA Management Dashboard • Dalise Carmine</div>
       </div>
     </header>
 
     <div class="grid">
-      <!-- Il resto del codice rimane uguale, ma assicurati che i tag siano chiusi -->
       <main class="card">
         <h3>Operational Timeline</h3>
-        <div class="input-group">
-          <input id="taskTitle" placeholder="Task description..." />
-          <input id="taskDept" placeholder="Department" />
+        <p class="small-text">Monitor tasks, departments, and SLA status in real-time.</p>
+
+        <div class="form-container">
+          <div class="input-group">
+            <input id="taskTitle" placeholder="Task description..." />
+            <input id="taskDept" placeholder="Department (e.g. IT, Digital)" />
+          </div>
+          <div class="input-group">
+            <input type="date" id="taskDue" />
+            <input type="number" id="taskSLA" placeholder="SLA (days)" />
+            <button id="addTaskBtn">Add Task +</button>
+          </div>
         </div>
-        <div class="input-group" style="margin-top:10 px">
-          <input type="date" id="taskDue" />
-          <input type="number" id="taskSLA" placeholder="SLA (days)" />
-          <button id="addTaskBtn">Add Task +</button>
-        </div>
+
         <div class="timeline" id="timeline"></div>
-        <div style="margin-top:30 px; display:flex; gap:10 px;">
-          <button id="exportPdf" style="background:#059669">Download PDF</button>
-          <button class="secondary" id="clearAll">Clear All</button>
+
+        <div class="action-bar">
+          <button id="exportPdf" class="btn-success">Download PDF Report</button>
+          <button id="printBtn" class="secondary">Print</button>
+          <button id="clearAll" class="secondary">Clear All</button>
         </div>
       </main>
 
       <aside>
-        <div class="card">
+        <div class="card settings-card">
           <h4>Project Settings</h4>
-          <div style="display:flex; flex-direction:column; gap:15 px; margin-top:15 px">
-            <input type="file" id="logoInput" />
+          <div class="settings-form">
+            <label>Organization Logo</label>
+            <input type="file" id="logoInput" accept="image/*" />
+            
+            <label>Project Title</label>
             <input id="projectTitleEN" value="TV Cabin Guest SOP" />
+            
+            <label>Hotel Director</label>
+            <input id="hotelDirector" placeholder="Name" />
+            
             <button id="saveSettings" class="secondary">Save Configuration</button>
-            <button id="loadDemo" class="secondary">Load Demo</button>
+            <button id="loadDemo" class="btn-demo">Load Demo Data</button>
+          </div>
+        </div>
+
+        <div class="card legend-card">
+          <h4>SLA Indicators</h4>
+          <div class="legend-item">
+            <span class="pill status-ok">On Track</span>
+            <span class="sub">Safe zone</span>
+          </div>
+          <div class="legend-item">
+            <span class="pill status-near">Near SLA</span>
+            <span class="sub">Deadline approaching</span>
+          </div>
+          <div class="legend-item">
+            <span class="pill status-past">Past SLA</span>
+            <span class="sub">Action required</span>
           </div>
         </div>
       </aside>
     </div>
+
+    <footer>
+      <div>© 2024 Dalise Carmine — Digital Lead</div>
+      <div>carmine.dalise@aroyacruises.com</div>
+    </footer>
   </div>
 
-  <!-- Percorso relativo esatto per il JS -->
-  <script src="./js/script.js"></script>
+  <!-- Collegamento JS -->
+  <script src="js/script.js"></script>
 </body>
 </html>
