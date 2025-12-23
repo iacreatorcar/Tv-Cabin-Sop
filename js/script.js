@@ -1,201 +1,112 @@
-:root {
-  --primary: #002855;       /* Navy Aroya */
-  --accent: #0056b3;
-  --bg: #f8fafc;
-  --card-bg: #ffffff;
-  --text-main: #1e293b;
-  --text-muted: #64748b;
+const timelineEl = document.getElementById('timeline');
+const tasksKey = 'tv_sop_tasks_v3';
+
+// Caricamento dati
+function loadTasks() {
+  const raw = localStorage.getItem(tasksKey);
+  return raw ? JSON.parse(raw) : [];
+}
+
+function saveTasks(arr) {
+  localStorage.setItem(tasksKey, JSON.stringify(arr));
+}
+
+function daysBetween(a, b) {
+  const ms = (new Date(b) - new Date(a));
+  return Math.ceil(ms / (1000 * 3600 * 24));
+}
+
+// Rendering della UI
+function render() {
+  const tasks = loadTasks();
+  timelineEl.innerHTML = '';
+  tasks.sort((x, y) => new Date(x.due) - new Date(y.due));
   
-  /* Status Colors */
-  --ok: #10b981;
-  --warn: #f59e0b;
-  --bad: #ef4444;
+  tasks.forEach((t, idx) => {
+    const el = document.createElement('div');
+    const now = new Date();
+    const daysLeft = daysBetween(now.toISOString().slice(0, 10), t.due);
+    
+    let statusClass = 'status-ok';
+    if (daysLeft < 0) statusClass = 'status-past';
+    else if (daysLeft <= (t.sla || 3)) statusClass = 'status-near';
+
+    el.className = `task ${statusClass}`;
+    el.innerHTML = `
+      <div class="task-info">
+        <div class="title">${t.title} <span style="font-weight:400; opacity:0.6; font-size:12px;">| ${t.dept}</span></div>
+        <div class="meta">Deadline: ${t.due} • SLA: ${t.sla}d • <strong>Remaining: ${daysLeft}d</strong></div>
+      </div>
+      <div style="display:flex; gap:5px;">
+        <button class="secondary" style="padding:5px 10px;" onclick="deleteTask(${idx})">✕</button>
+      </div>
+    `;
+    timelineEl.appendChild(el);
+  });
+}
+
+// Funzioni Operative
+function addTask() {
+  const title = document.getElementById('taskTitle').value.trim();
+  const dept = document.getElementById('taskDept').value.trim() || 'General';
+  const due = document.getElementById('taskDue').value;
+  const sla = parseInt(document.getElementById('taskSLA').value || 0, 10);
   
-  --radius: 12px;
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  if (!title || !due) { alert('Please enter title and date'); return; }
+  
+  const arr = loadTasks();
+  arr.push({ title, dept, due, sla });
+  saveTasks(arr);
+  render();
+  
+  document.getElementById('taskTitle').value = '';
+  document.getElementById('taskDue').value = '';
 }
 
-* { box-sizing: border-box; transition: all 0.2s ease; }
+window.deleteTask = function(i) {
+  const arr = loadTasks();
+  arr.splice(i, 1);
+  saveTasks(arr);
+  render();
+};
 
-body {
-  font-family: 'Inter', -apple-system, sans-serif;
-  background-color: var(--bg);
-  color: var(--text-main);
-  margin: 0;
-  line-height: 1.5;
-}
+document.getElementById('addTaskBtn').addEventListener('click', addTask);
 
-.container {
-  max-width: 1300px;
-  margin: 0 auto;
-  padding: 40px 20px;
-}
+document.getElementById('clearAll').addEventListener('click', () => {
+  if (confirm('Clear all tasks?')) { localStorage.removeItem(tasksKey); render(); }
+});
 
-/* Header Design */
-header {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  margin-bottom: 40px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #e2e8f0;
-}
+// Settings & Logo
+document.getElementById('saveSettings').addEventListener('click', () => {
+  const s = {
+    title: document.getElementById('projectTitleEN').value,
+    director: document.getElementById('hotelDirector').value
+  };
+  localStorage.setItem('tv_sop_settings_v3', JSON.stringify(s));
+  alert('Configuration Saved');
+});
 
-.logo-preview {
-  width: 80px;
-  height: 80px;
-  background: white;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow);
-  border: 1px solid #f1f5f9;
-}
+document.getElementById('loadDemo').addEventListener('click', () => {
+  const demo = [
+    { title: 'Kids Channel Update', dept: 'Digital', due: '2024-12-30', sla: 5 },
+    { title: 'Safety Video Upload', dept: 'IT', due: '2024-12-25', sla: 2 }
+  ];
+  saveTasks(demo);
+  render();
+});
 
-.logo-preview img { max-width: 80%; }
+// Export PDF
+document.getElementById('exportPdf').addEventListener('click', () => {
+  const element = document.querySelector('.container');
+  const opt = {
+    margin: 0.5,
+    filename: 'TV_Cabin_SOP_Report.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+  };
+  html2pdf().set(opt).from(element).save();
+});
 
-h1 {
-  font-size: 28px;
-  font-weight: 800;
-  margin: 0;
-  color: var(--primary);
-  letter-spacing: -0.5px;
-}
-
-.sub { color: var(--text-muted); font-size: 14px; }
-
-/* Grid Layout */
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 30px;
-}
-
-.card {
-  background: var(--card-bg);
-  padding: 28px;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  border: 1px solid rgba(255,255,255,0.7);
-}
-
-h3, h4 { margin-top: 0; color: var(--primary); font-weight: 700; }
-
-/* Form Elements */
-.input-group {
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-input, select {
-  width: 100%;
-  padding: 12px 16px;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
-  background: #fdfdfd;
-  font-size: 14px;
-}
-
-input:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
-}
-
-button {
-  padding: 12px 20px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  font-size: 14px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-button:not(.secondary) {
-  background: var(--primary);
-  color: white;
-}
-
-button:not(.secondary):hover {
-  background: #001a3a;
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-lg);
-}
-
-button.secondary {
-  background: #f1f5f9;
-  color: var(--text-main);
-}
-
-button.secondary:hover { background: #e2e8f0; }
-
-/* Timeline Tasks */
-.task {
-  display: flex;
-  align-items: center;
-  padding: 18px;
-  margin-bottom: 12px;
-  background: white;
-  border-radius: 12px;
-  border-left: 6px solid #cbd5e1;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-  border-top: 1px solid #f1f5f9;
-  border-right: 1px solid #f1f5f9;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-/* Color coding by status */
-.task.status-ok { border-left-color: var(--ok); }
-.task.status-near { border-left-color: var(--warn); }
-.task.status-past { border-left-color: var(--bad); }
-
-.task:hover {
-  transform: translateX(4px);
-  box-shadow: var(--shadow);
-}
-
-.task .meta { flex: 1; }
-.task .title { font-weight: 700; font-size: 16px; margin-bottom: 4px; }
-
-.tag {
-  background: #eff6ff;
-  color: var(--accent);
-  padding: 2px 10px;
-  border-radius: 6px;
-  font-size: 11px;
-  text-transform: uppercase;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-}
-
-/* Legend & Footer */
-.pill {
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-footer {
-  margin-top: 60px;
-  padding-top: 20px;
-  border-top: 1px solid #e2e8f0;
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-@media (max-width: 900px) {
-  .grid { grid-template-columns: 1fr; }
-  .input-group { grid-template-columns: 1fr; }
-}
+// Inizializza
+render();
